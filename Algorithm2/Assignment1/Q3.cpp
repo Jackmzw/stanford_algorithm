@@ -2,6 +2,7 @@
 #include <queue>
 #include <list>
 #include <vector>
+#include <set>
 #include <iterator>
 #include <fstream>
 #include <utility>
@@ -52,7 +53,8 @@ int64_t Graph::primMST()
     // are being preinMST. This is weird syntax in C++. 
     // Refer below link for details of this syntax 
     // http://geeksquiz.com/implement-min-heap-using-stl/ 
-    priority_queue< iPair, vector <iPair> , greater<iPair> > pq; 
+    //priority_queue< iPair, vector <iPair> , greater<iPair> > pq; 
+    set<iPair> pq; 
   
     int src = 0; // Taking vertex 0 as source 
   
@@ -65,7 +67,7 @@ int64_t Graph::primMST()
   
     // Insert source itself in priority queue and initialize 
     // its key as 0. 
-    pq.push(make_pair(0, src)); 
+    pq.insert(make_pair(0, src)); 
     key[src] = 0; 
 
     int64_t minCost = 0;
@@ -78,9 +80,10 @@ int64_t Graph::primMST()
         // has to be done this way to keep the vertices 
         // sorted key (key must be first item 
         // in pair) 
-        int u = pq.top().second; 
-	minCost += pq.top().first;
-        pq.pop(); 
+	iPair tmp = *(pq.begin());
+        int u = tmp.second; 
+	minCost += tmp.first;
+	pq.erase(pq.begin());
   
         inMST[u] = true;  // Include vertex in MST 
   
@@ -97,9 +100,11 @@ int64_t Graph::primMST()
             // than current key of v 
             if (inMST[v] == false && key[v] > weight) 
             { 
+		if(key[v] != INF)
+		    pq.erase(pq.find(make_pair(key[v], v)));
                 // Updating key of v 
                 key[v] = weight; 
-                pq.push(make_pair(key[v], v)); 
+                pq.insert(make_pair(key[v], v)); 
             } 
         } 
     } 
